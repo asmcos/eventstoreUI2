@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Eye } from "lucide-react";
 import { recordBrowseView } from "@/lib/browselog";
 
@@ -11,17 +11,11 @@ interface TopicViewBadgeProps {
 
 export default function TopicViewBadge({ topicId, initialCount = 0 }: TopicViewBadgeProps) {
   const recorded = useRef(false);
-  const [count, setCount] = useState(initialCount);
-
-  useEffect(() => {
-    setCount(initialCount);
-  }, [initialCount]);
 
   useEffect(() => {
     if (!topicId || recorded.current) return;
     recorded.current = true;
     recordBrowseView(topicId);
-    setCount((n) => n + 1);
   }, [topicId]);
 
   return (
@@ -30,7 +24,7 @@ export default function TopicViewBadge({ topicId, initialCount = 0 }: TopicViewB
       title="浏览量"
     >
       <Eye className="h-4 w-4 text-blue-600" />
-      <span className="font-semibold">{count}</span>
+      <span className="font-semibold">{initialCount}</span>
     </div>
   );
 }

@@ -67,16 +67,10 @@ export default function BlogArticle({ blog, author, viewCount = 0 }: BlogArticle
   const coverUrl = blog.data.coverUrl ? `${uploadpath}${blog.data.coverUrl}` : null;
   const avatarUrl = author?.data.avatarUrl ? `${uploadpath}${author.data.avatarUrl}` : null;
   const date = blog.servertimestamp?.split("T")[0] ?? "";
-  const [displayViewCount, setDisplayViewCount] = useState(viewCount);
-
-  useEffect(() => {
-    setDisplayViewCount(viewCount);
-  }, [viewCount]);
 
   useEffect(() => {
     if (!blog.id) return;
     recordBrowseView(blog.id);
-    setDisplayViewCount((n) => n + 1);
   }, [blog.id]);
 
   const headings = useMemo(() => extractHeadings(content), [content]);
@@ -164,7 +158,7 @@ export default function BlogArticle({ blog, author, viewCount = 0 }: BlogArticle
               )}
               <span className="inline-flex items-center gap-1.5">
                 <Eye className="h-4 w-4 text-emerald-500" />
-                {displayViewCount} 次阅读
+                {viewCount} 次阅读
               </span>
             </div>
           </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { generateSecretKey, getPublicKey } from "eventstore-tools/src/key";
-import { create_browselog } from "@/lib/esclient/esclient";
 import { WebStorage } from "@/lib/auth/storage";
 import { getKey } from "@/lib/auth/keys";
 
@@ -21,9 +20,19 @@ function getAnonymousPubkey(): string {
   return getPublicKey(keypriv) as unknown as string;
 }
 
-/** 记录一次浏览（登录用户用其公钥，未登录则生成匿名公钥） */
+/**
+ * 记录一次浏览（登录用户用其公钥，未登录则生成匿名公钥）。
+ * 对应原项目 browselog()；经服务端 API 写入 EventStore，避免浏览器直连 WebSocket 失败。
+ */
 export function recordBrowseView(targetId: string, pubkey?: string | null): void {
   if (!targetId || typeof window === "undefined") return;
-  const userPubkey = pubkey ?? getKey().Keypub ?? getAnonymousPubkey();
-  void create_browselog(userPubkey, targetId, () => {});
+  const userPubkey = pubkey || getKey().Keypub || getAnonymousPubkey();
+  if (!userPubkey) return;
+
+  void fetch("/api/browselog", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pubkey: userPubkey, targetId }),
+    keepalive: true,
+  }).catch(() => {});
 }

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { esserver } from "../config";
+import { esserver, clientEsserver } from "../config";
 
 import {    
     generateSecretKey,
@@ -18,7 +18,8 @@ import {
 
 import {WebSocketClient } from "eventstore-tools/src/WebSocketClient";
 
-let client =  new WebSocketClient(esserver);
+const wsUrl = typeof window === "undefined" ? esserver : clientEsserver;
+let client = new WebSocketClient(wsUrl);
 
 function getId(tempEvent){
   return hashMessage(JSON.stringify(tempEvent))

@@ -1,5 +1,10 @@
+/** 服务端 SSR / API 使用的 WebSocket 地址 */
 export const esserver =
   process.env.EVENTSTORE_WS_URL ?? "ws://127.0.0.1:8080/";
+
+/** 浏览器端直连 EventStore（登录、上传等） */
+export const clientEsserver =
+  process.env.NEXT_PUBLIC_EVENTSTORE_WS_URL ?? "ws://127.0.0.1:8080/";
 
 export const uploadpath =
   process.env.UPLOAD_BASE_URL ?? "http://127.0.0.1:8081/uploads/";
