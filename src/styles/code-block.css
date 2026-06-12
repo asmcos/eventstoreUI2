@@ -56,25 +56,72 @@
   background: rgba(0, 0, 0, 0.06);
 }
 
-.vp-doc .code-block pre.shiki {
+.vp-doc .code-block pre.hljs {
   margin: 0;
   border-radius: 0;
   overflow: auto;
   padding: 1rem;
   font-size: 14px;
   line-height: 1.5;
-  background: #fafafa !important;
+  background: #fafafa;
 }
 
-.vp-doc .code-block pre.shiki code {
+.vp-doc .code-block pre.hljs code {
   display: block;
   width: fit-content;
   min-width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-.vp-doc .code-block pre.shiki .line {
-  min-height: 1.25rem;
+/* highlight.js — 接近 VitePress vitesse-light */
+.vp-doc .hljs {
+  color: #393a34;
+}
+
+.vp-doc .hljs-comment,
+.vp-doc .hljs-quote {
+  color: #a0a1a7;
+  font-style: italic;
+}
+
+.vp-doc .hljs-keyword,
+.vp-doc .hljs-selector-tag,
+.vp-doc .hljs-literal,
+.vp-doc .hljs-built_in {
+  color: #994cc3;
+}
+
+.vp-doc .hljs-string,
+.vp-doc .hljs-regexp,
+.vp-doc .hljs-addition {
+  color: #50a14f;
+}
+
+.vp-doc .hljs-number,
+.vp-doc .hljs-symbol,
+.vp-doc .hljs-bullet {
+  color: #c18401;
+}
+
+.vp-doc .hljs-title,
+.vp-doc .hljs-section,
+.vp-doc .hljs-function .hljs-title,
+.vp-doc .hljs-name {
+  color: #4078f2;
+}
+
+.vp-doc .hljs-attr,
+.vp-doc .hljs-attribute,
+.vp-doc .hljs-variable,
+.vp-doc .hljs-template-variable,
+.vp-doc .hljs-type {
+  color: #c18401;
+}
+
+.vp-doc .hljs-meta,
+.vp-doc .hljs-selector-id,
+.vp-doc .hljs-selector-class {
+  color: #e45649;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,7 +134,42 @@
     color: #94a3b8;
   }
 
-  .vp-doc .code-block pre.shiki {
-    background: #1e1e2e !important;
+  .vp-doc .code-block pre.hljs {
+    background: #1e1e2e;
+  }
+
+  .vp-doc .hljs {
+    color: #dbd7ca;
+  }
+
+  .vp-doc .hljs-comment,
+  .vp-doc .hljs-quote {
+    color: #758575;
+  }
+
+  .vp-doc .hljs-keyword,
+.vp-doc .hljs-selector-tag,
+  .vp-doc .hljs-literal,
+  .vp-doc .hljs-built_in {
+    color: #c98a7d;
+  }
+
+  .vp-doc .hljs-string,
+  .vp-doc .hljs-regexp,
+  .vp-doc .hljs-addition {
+    color: #98c379;
+  }
+
+  .vp-doc .hljs-number,
+  .vp-doc .hljs-symbol,
+  .vp-doc .hljs-bullet {
+    color: #e5c07b;
+  }
+
+  .vp-doc .hljs-title,
+  .vp-doc .hljs-section,
+  .vp-doc .hljs-function .hljs-title,
+  .vp-doc .hljs-name {
+    color: #61afef;
   }
 }
