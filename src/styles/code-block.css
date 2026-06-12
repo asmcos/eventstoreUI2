@@ -75,6 +75,39 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   background: transparent;
   padding: 0;
+  color: inherit;
+}
+
+/* 亮色模式：JSON 等 token 着色（与 GitHub 语法色一致） */
+.vp-doc .code-block .hljs-attr,
+.vp-doc .code-block .hljs-attribute,
+.vp-doc .code-block .hljs-literal,
+.vp-doc .code-block .hljs-number,
+.vp-doc .code-block .hljs-variable {
+  color: #005cc5;
+}
+
+.vp-doc .code-block .hljs-string,
+.vp-doc .code-block .hljs-meta .hljs-string {
+  color: #032f62;
+}
+
+.vp-doc .code-block .hljs-keyword,
+.vp-doc .code-block .hljs-type {
+  color: #d73a49;
+}
+
+.vp-doc .code-block .hljs-comment {
+  color: #6a737d;
+}
+
+.vp-doc .code-block .hljs-punctuation {
+  color: #24292e;
+}
+
+.vp-doc .code-block .hljs-built_in,
+.vp-doc .code-block .hljs-symbol {
+  color: #e36209;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -121,6 +154,10 @@
   .vp-doc .code-block .hljs-selector-id,
   .vp-doc .code-block .hljs-variable {
     color: #79c0ff;
+  }
+
+  .vp-doc .code-block .hljs-punctuation {
+    color: #c9d1d9;
   }
 
   .vp-doc .code-block .hljs-regexp,

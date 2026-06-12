@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import MarkdownContent from "@/components/markdown/MarkdownContent";
 import { buildMetadata } from "@/lib/seo";
 import { fetchBrowseLogs, fetchTopicById } from "@/lib/esclient/server";
 import TopicViewBadge from "@/components/topic/TopicViewBadge";
@@ -78,7 +77,7 @@ export default async function TopicDetailPage({ params }: TopicDetailPageProps) 
           </header>
           <div className="prose-content">
             {typeof topic.data.content === "string" ? (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{topic.data.content}</ReactMarkdown>
+              <MarkdownContent content={topic.data.content} />
             ) : (
               <p className="text-gray-500">暂无内容</p>
             )}

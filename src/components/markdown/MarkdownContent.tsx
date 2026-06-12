@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 import { slugifyHeading } from "@/lib/markdown/toc";
+import { inferFenceLang } from "@/lib/markdown/code-lang";
 import CodeBlock from "@/components/markdown/CodeBlock";
 import "@/styles/code-block.css";
 
@@ -24,7 +25,7 @@ function extractCodeBlock(children: React.ReactNode): { code: string; lang: stri
     return { code, lang };
   }
 
-  return { code, lang: "bash" };
+  return { code, lang: inferFenceLang(code) };
 }
 
 const components: Components = {

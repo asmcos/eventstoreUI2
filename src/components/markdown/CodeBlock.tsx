@@ -17,22 +17,7 @@ import rust from "highlight.js/lib/languages/rust";
 import typescript from "highlight.js/lib/languages/typescript";
 import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
-
-/** 与原项目 shiki langs 对齐：js ts bash json html css markdown yaml python java go c rust */
-const LANG_ALIASES: Record<string, string> = {
-  js: "javascript",
-  ts: "typescript",
-  py: "python",
-  sh: "bash",
-  shell: "bash",
-  zsh: "bash",
-  console: "bash",
-  terminal: "bash",
-  yml: "yaml",
-  md: "markdown",
-  html: "xml",
-  htm: "xml",
-};
+import { displayLangLabel, resolveHighlightLang } from "@/lib/markdown/code-lang";
 
 const REGISTERED = new Set<string>();
 
@@ -61,19 +46,6 @@ registerLang("plaintext", plaintext);
 
 function escapeHtml(code: string): string {
   return code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-/** 未标注或 text/txt 时默认 bash；未知语言回退 plaintext */
-function resolveHighlightLang(lang: string): string {
-  const raw = lang.trim().toLowerCase().split(":")[0] ?? "";
-  if (!raw || raw === "text" || raw === "txt") return "bash";
-  const mapped = LANG_ALIASES[raw] ?? raw;
-  return REGISTERED.has(mapped) ? mapped : "plaintext";
-}
-
-function displayLangLabel(lang: string): string {
-  const raw = lang.trim().split(":")[0] ?? "";
-  return raw || "bash";
 }
 
 function highlightCode(code: string, lang: string): string {
@@ -129,7 +101,7 @@ export default function CodeBlock({ code, lang = "" }: CodeBlockProps) {
         </button>
       </div>
       <pre className="hljs">
-        <code dangerouslySetInnerHTML={{ __html: html }} />
+        <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </div>
   );
