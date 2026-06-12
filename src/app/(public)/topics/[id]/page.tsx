@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { buildMetadata } from "@/lib/seo";
-import { fetchTopicById } from "@/lib/esclient/server";
+import { fetchBrowseLogs, fetchTopicById } from "@/lib/esclient/server";
+import TopicViewBadge from "@/components/topic/TopicViewBadge";
+import type { BrowseLogs } from "@/lib/types/events";
 
 interface TopicDetailPageProps {
   params: Promise<{ id: string }>;
@@ -42,6 +44,9 @@ export default async function TopicDetailPage({ params }: TopicDetailPageProps) 
 
   if (!topic) notFound();
 
+  const browseLogs = await fetchBrowseLogs([topic.id]).catch((): BrowseLogs => ({}));
+  const viewCount = browseLogs[topic.id] ?? 0;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "DiscussionForumPosting",
@@ -59,9 +64,12 @@ export default async function TopicDetailPage({ params }: TopicDetailPageProps) 
       <article className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="card p-6 sm:p-10">
           <header className="mb-8 border-b border-gray-100 pb-6">
-            <h1 className="mb-4 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
-              {topic.data.title}
-            </h1>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+              <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
+                {topic.data.title}
+              </h1>
+              <TopicViewBadge topicId={topic.id} initialCount={viewCount} />
+            </div>
             {topic.servertimestamp && (
               <time dateTime={topic.servertimestamp} className="text-sm text-gray-500">
                 {topic.servertimestamp.split("T")[0]}

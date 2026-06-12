@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { buildMetadata } from "@/lib/seo";
 import { fetchBookDetailData } from "@/lib/esclient/server";
 import BookReader from "@/components/book/BookReader";
+import RecordBrowseView from "@/components/tracking/RecordBrowseView";
 import { findChapterInOutline } from "@/lib/book/outline";
 import { uploadpath } from "@/lib/config";
 
@@ -78,6 +79,7 @@ export default async function BookDetailPage({ params, searchParams }: BookDetai
 
   return (
     <>
+      <RecordBrowseView targetId={detail.rawBookId} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

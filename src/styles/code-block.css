@@ -1,4 +1,6 @@
-/* 参考 markview / VitePress 代码块样式 */
+/* 参考 markview / VitePress 代码块布局 + highlight.js GitHub 主题着色 */
+@import "highlight.js/styles/github.css";
+
 .vp-doc .code-block {
   background: #fff;
   border-radius: 12px;
@@ -63,7 +65,7 @@
   padding: 1rem;
   font-size: 14px;
   line-height: 1.5;
-  background: #fafafa;
+  background: #fff;
 }
 
 .vp-doc .code-block pre.hljs code {
@@ -71,57 +73,8 @@
   width: fit-content;
   min-width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-/* highlight.js — 接近 VitePress vitesse-light */
-.vp-doc .hljs {
-  color: #393a34;
-}
-
-.vp-doc .hljs-comment,
-.vp-doc .hljs-quote {
-  color: #a0a1a7;
-  font-style: italic;
-}
-
-.vp-doc .hljs-keyword,
-.vp-doc .hljs-selector-tag,
-.vp-doc .hljs-literal,
-.vp-doc .hljs-built_in {
-  color: #994cc3;
-}
-
-.vp-doc .hljs-string,
-.vp-doc .hljs-regexp,
-.vp-doc .hljs-addition {
-  color: #50a14f;
-}
-
-.vp-doc .hljs-number,
-.vp-doc .hljs-symbol,
-.vp-doc .hljs-bullet {
-  color: #c18401;
-}
-
-.vp-doc .hljs-title,
-.vp-doc .hljs-section,
-.vp-doc .hljs-function .hljs-title,
-.vp-doc .hljs-name {
-  color: #4078f2;
-}
-
-.vp-doc .hljs-attr,
-.vp-doc .hljs-attribute,
-.vp-doc .hljs-variable,
-.vp-doc .hljs-template-variable,
-.vp-doc .hljs-type {
-  color: #c18401;
-}
-
-.vp-doc .hljs-meta,
-.vp-doc .hljs-selector-id,
-.vp-doc .hljs-selector-class {
-  color: #e45649;
+  background: transparent;
+  padding: 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -135,41 +88,94 @@
   }
 
   .vp-doc .code-block pre.hljs {
-    background: #1e1e2e;
+    background: #0d1117;
+    color: #c9d1d9;
   }
 
-  .vp-doc .hljs {
-    color: #dbd7ca;
+  /* github-dark 核心 token 色（bash built_in / string / comment 等） */
+  .vp-doc .code-block .hljs-doctag,
+  .vp-doc .code-block .hljs-keyword,
+  .vp-doc .code-block .hljs-meta .hljs-keyword,
+  .vp-doc .code-block .hljs-template-tag,
+  .vp-doc .code-block .hljs-template-variable,
+  .vp-doc .code-block .hljs-type,
+  .vp-doc .code-block .hljs-variable.language_ {
+    color: #ff7b72;
   }
 
-  .vp-doc .hljs-comment,
-  .vp-doc .hljs-quote {
-    color: #758575;
+  .vp-doc .code-block .hljs-title,
+  .vp-doc .code-block .hljs-title.class_,
+  .vp-doc .code-block .hljs-title.class_.inherited__,
+  .vp-doc .code-block .hljs-title.function_ {
+    color: #d2a8ff;
   }
 
-  .vp-doc .hljs-keyword,
-.vp-doc .hljs-selector-tag,
-  .vp-doc .hljs-literal,
-  .vp-doc .hljs-built_in {
-    color: #c98a7d;
+  .vp-doc .code-block .hljs-attr,
+  .vp-doc .code-block .hljs-attribute,
+  .vp-doc .code-block .hljs-literal,
+  .vp-doc .code-block .hljs-meta,
+  .vp-doc .code-block .hljs-number,
+  .vp-doc .code-block .hljs-operator,
+  .vp-doc .code-block .hljs-selector-attr,
+  .vp-doc .code-block .hljs-selector-class,
+  .vp-doc .code-block .hljs-selector-id,
+  .vp-doc .code-block .hljs-variable {
+    color: #79c0ff;
   }
 
-  .vp-doc .hljs-string,
-  .vp-doc .hljs-regexp,
-  .vp-doc .hljs-addition {
-    color: #98c379;
+  .vp-doc .code-block .hljs-regexp,
+  .vp-doc .code-block .hljs-string {
+    color: #a5d6ff;
   }
 
-  .vp-doc .hljs-number,
-  .vp-doc .hljs-symbol,
-  .vp-doc .hljs-bullet {
-    color: #e5c07b;
+  .vp-doc .code-block .hljs-built_in,
+  .vp-doc .code-block .hljs-symbol {
+    color: #ffa657;
   }
 
-  .vp-doc .hljs-title,
-  .vp-doc .hljs-section,
-  .vp-doc .hljs-function .hljs-title,
-  .vp-doc .hljs-name {
-    color: #61afef;
+  .vp-doc .code-block .hljs-comment,
+  .vp-doc .code-block .hljs-code,
+  .vp-doc .code-block .hljs-formula {
+    color: #8b949e;
+  }
+
+  .vp-doc .code-block .hljs-name,
+  .vp-doc .code-block .hljs-quote,
+  .vp-doc .code-block .hljs-selector-pseudo,
+  .vp-doc .code-block .hljs-selector-tag {
+    color: #7ee787;
+  }
+
+  .vp-doc .code-block .hljs-subst {
+    color: #c9d1d9;
+  }
+
+  .vp-doc .code-block .hljs-section {
+    color: #1f6feb;
+    font-weight: 700;
+  }
+
+  .vp-doc .code-block .hljs-bullet {
+    color: #f2cc60;
+  }
+
+  .vp-doc .code-block .hljs-emphasis {
+    color: #c9d1d9;
+    font-style: italic;
+  }
+
+  .vp-doc .code-block .hljs-strong {
+    color: #c9d1d9;
+    font-weight: 700;
+  }
+
+  .vp-doc .code-block .hljs-addition {
+    color: #aff5b4;
+    background-color: #033a16;
+  }
+
+  .vp-doc .code-block .hljs-deletion {
+    color: #ffdcd7;
+    background-color: #67060c;
   }
 }

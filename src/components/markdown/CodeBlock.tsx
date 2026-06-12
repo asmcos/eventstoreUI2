@@ -11,21 +11,27 @@ import java from "highlight.js/lib/languages/java";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
 import markdown from "highlight.js/lib/languages/markdown";
+import plaintext from "highlight.js/lib/languages/plaintext";
 import python from "highlight.js/lib/languages/python";
 import rust from "highlight.js/lib/languages/rust";
 import typescript from "highlight.js/lib/languages/typescript";
 import xml from "highlight.js/lib/languages/xml";
 import yaml from "highlight.js/lib/languages/yaml";
 
+/** 与原项目 shiki langs 对齐：js ts bash json html css markdown yaml python java go c rust */
 const LANG_ALIASES: Record<string, string> = {
   js: "javascript",
   ts: "typescript",
   py: "python",
   sh: "bash",
   shell: "bash",
+  zsh: "bash",
+  console: "bash",
+  terminal: "bash",
   yml: "yaml",
   md: "markdown",
   html: "xml",
+  htm: "xml",
 };
 
 const REGISTERED = new Set<string>();
@@ -39,6 +45,8 @@ function registerLang(name: string, lang: LanguageFn) {
 registerLang("javascript", javascript);
 registerLang("typescript", typescript);
 registerLang("bash", bash);
+registerLang("shell", bash);
+registerLang("sh", bash);
 registerLang("json", json);
 registerLang("xml", xml);
 registerLang("css", css);
@@ -49,29 +57,34 @@ registerLang("java", java);
 registerLang("go", go);
 registerLang("c", c);
 registerLang("rust", rust);
+registerLang("plaintext", plaintext);
 
-function resolveLang(lang: string): string {
-  const normalized = lang.trim().toLowerCase().split(":")[0] ?? "";
-  const mapped = LANG_ALIASES[normalized] ?? normalized;
-  return REGISTERED.has(mapped) ? mapped : "";
+function escapeHtml(code: string): string {
+  return code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/** 解析 fence 语言；未知语言回退 plaintext（同原项目 targetLang = lang || "text"） */
+function resolveHighlightLang(lang: string): string {
+  const raw = lang.trim().toLowerCase().split(":")[0] ?? "";
+  if (!raw || raw === "text" || raw === "txt") return "plaintext";
+  const mapped = LANG_ALIASES[raw] ?? raw;
+  return REGISTERED.has(mapped) ? mapped : "plaintext";
+}
+
+function displayLangLabel(lang: string): string {
+  const raw = lang.trim().split(":")[0] ?? "";
+  return raw || "text";
 }
 
 function highlightCode(code: string, lang: string): string {
-  const targetLang = resolveLang(lang);
-  if (targetLang) {
-    try {
-      return hljs.highlight(code, { language: targetLang, ignoreIllegals: true }).value;
-    } catch {
-      /* fall through */
-    }
+  const targetLang = resolveHighlightLang(lang);
+  if (targetLang === "plaintext") {
+    return escapeHtml(code);
   }
   try {
-    return hljs.highlightAuto(code).value;
+    return hljs.highlight(code, { language: targetLang, ignoreIllegals: true }).value;
   } catch {
-    return code
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return escapeHtml(code);
   }
 }
 
@@ -82,11 +95,11 @@ interface CodeBlockProps {
 
 export default function CodeBlock({ code, lang = "" }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
-  const displayLang = lang.trim() || "text";
+  const label = displayLangLabel(lang);
   const lineCount = code.split("\n").length;
   const showDots = lineCount > 3;
 
-  const html = useMemo(() => highlightCode(code, displayLang), [code, displayLang]);
+  const html = useMemo(() => highlightCode(code, lang), [code, lang]);
 
   const handleCopy = async () => {
     try {
@@ -110,7 +123,7 @@ export default function CodeBlock({ code, lang = "" }: CodeBlockProps) {
         ) : (
           <span />
         )}
-        <span>{displayLang}</span>
+        <span>{label}</span>
         <button type="button" className="copy-btn" onClick={handleCopy}>
           {copied ? "已复制!" : "复制"}
         </button>

@@ -108,6 +108,7 @@ main > section {
 
 .blog-main-container {
   display: flex;
+  align-items: flex-start;
   gap: 2rem;
   max-width: 80rem;
 }
@@ -119,6 +120,11 @@ main > section {
 
 .right-toc-container {
   flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: 5rem;
+  max-height: calc(100vh - 5rem);
+  overflow-y: auto;
 }
 
 @media (max-width: 1024px) {

@@ -8,6 +8,7 @@ import MarkdownContent from "@/components/markdown/MarkdownContent";
 import BlogDivider from "@/components/blog/BlogDivider";
 import { extractHeadings } from "@/lib/markdown/toc";
 import { uploadpath } from "@/lib/config";
+import { recordBrowseView } from "@/lib/browselog";
 import type { EventStoreItem, UserProfile } from "@/lib/types/events";
 
 const TAG_COLORS = [
@@ -66,6 +67,17 @@ export default function BlogArticle({ blog, author, viewCount = 0 }: BlogArticle
   const coverUrl = blog.data.coverUrl ? `${uploadpath}${blog.data.coverUrl}` : null;
   const avatarUrl = author?.data.avatarUrl ? `${uploadpath}${author.data.avatarUrl}` : null;
   const date = blog.servertimestamp?.split("T")[0] ?? "";
+  const [displayViewCount, setDisplayViewCount] = useState(viewCount);
+
+  useEffect(() => {
+    setDisplayViewCount(viewCount);
+  }, [viewCount]);
+
+  useEffect(() => {
+    if (!blog.id) return;
+    recordBrowseView(blog.id);
+    setDisplayViewCount((n) => n + 1);
+  }, [blog.id]);
 
   const headings = useMemo(() => extractHeadings(content), [content]);
   const [activeId, setActiveId] = useState("");
@@ -89,7 +101,7 @@ export default function BlogArticle({ blog, author, viewCount = 0 }: BlogArticle
   }, [headings]);
 
   return (
-    <div className="blog-main-container container mx-auto flex gap-8 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="blog-main-container container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="blog-content-container min-w-0 flex-1">
         {/* 面包屑 */}
         <nav className="mb-6 flex flex-wrap items-center gap-1 text-sm text-gray-500">
@@ -152,7 +164,7 @@ export default function BlogArticle({ blog, author, viewCount = 0 }: BlogArticle
               )}
               <span className="inline-flex items-center gap-1.5">
                 <Eye className="h-4 w-4 text-emerald-500" />
-                {viewCount} 次阅读
+                {displayViewCount} 次阅读
               </span>
             </div>
           </div>
@@ -250,9 +262,9 @@ export default function BlogArticle({ blog, author, viewCount = 0 }: BlogArticle
         </div>
       </div>
 
-      {/* 桌面端右侧 TOC */}
+      {/* 桌面端右侧 TOC — sticky 随页面滚动保持可见 */}
       {headings.length > 0 && (
-        <aside className="right-toc-container sticky top-20 hidden h-[calc(100vh-6rem)] w-56 shrink-0 overflow-y-auto lg:block xl:w-64">
+        <aside className="right-toc-container hidden w-56 lg:block xl:w-64">
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
             <p className="mb-3 border-b border-gray-100 pb-2 text-sm font-semibold text-slate-800">
               文章目录
