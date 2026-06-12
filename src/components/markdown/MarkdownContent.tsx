@@ -1,11 +1,25 @@
+import React, { isValidElement } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 import { slugifyHeading } from "@/lib/markdown/toc";
+import CodeBlock from "@/components/markdown/CodeBlock";
+import "@/styles/code-block.css";
 
 interface MarkdownContentProps {
   content: string;
   className?: string;
+}
+
+function extractCodeBlock(children: React.ReactNode): { code: string; lang: string } | null {
+  if (!isValidElement<{ className?: string; children?: React.ReactNode }>(children)) {
+    return null;
+  }
+  const className = children.props.className ?? "";
+  if (!className.includes("language-")) return null;
+  const lang = className.replace(/.*language-(\S+).*/, "$1");
+  const code = String(children.props.children ?? "").replace(/\n$/, "");
+  return { code, lang };
 }
 
 const components: Components = {
@@ -53,11 +67,17 @@ const components: Components = {
       {children}
     </a>
   ),
-  pre: ({ children }) => (
-    <pre className="my-6 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100">
-      {children}
-    </pre>
-  ),
+  pre: ({ children }) => {
+    const block = extractCodeBlock(children);
+    if (block) {
+      return <CodeBlock code={block.code} lang={block.lang} />;
+    }
+    return (
+      <pre className="my-6 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100">
+        {children}
+      </pre>
+    );
+  },
   code: ({ className, children }) => {
     const isBlock = className?.includes("language-");
     if (isBlock) {
@@ -73,7 +93,7 @@ const components: Components = {
 
 export default function MarkdownContent({ content, className = "" }: MarkdownContentProps) {
   return (
-    <div className={`blog-content ${className}`}>
+    <div className={`vp-doc blog-content ${className}`}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {content}
       </ReactMarkdown>

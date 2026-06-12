@@ -90,6 +90,7 @@ export default async function BookDetailPage({ params, searchParams }: BookDetai
         }
       >
         <BookReader
+          key={`${id}-${chapter ?? detail.firstChapterId ?? "default"}`}
           shortBookId={id}
           title={title}
           authorName={detail.authorName}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Heart, Link2, Loader2, Menu, MessageCircle, Send, X } from "lucide-react";
@@ -40,6 +40,20 @@ export default function BookReader({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showComment, setShowComment] = useState(false);
   const [copied, setCopied] = useState(false);
+  const contentRef = useRef(initialContent);
+  const fetchSeqRef = useRef(0);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
+
+  // SSR 随 URL ?chapter= 变化时会下发新 props，需同步到客户端 state
+  useEffect(() => {
+    const nextId = initialChapterId ? normalizeChapterId(initialChapterId) : null;
+    setActiveChapterId(nextId);
+    setContent(initialContent);
+    contentRef.current = initialContent;
+  }, [initialChapterId, initialContent]);
 
   const chapterCount = useMemo(() => countChapters(outline), [outline]);
   const headings = useMemo(() => extractHeadings(content), [content]);
@@ -48,7 +62,7 @@ export default function BookReader({
     (chapterId: string | number) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set(BOOK_CHAPTER_QUERY, normalizeChapterId(chapterId));
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [pathname, router, searchParams]
   );
@@ -58,13 +72,14 @@ export default function BookReader({
       const normalizedId = normalizeChapterId(chapterId);
       const shouldSyncUrl = options?.syncUrl !== false;
 
-      if (normalizedId === activeChapterId && content) {
+      if (normalizedId === activeChapterId && contentRef.current) {
         if (shouldSyncUrl && chapterFromUrl !== normalizedId) {
           updateChapterUrl(normalizedId);
         }
         return;
       }
 
+      const seq = ++fetchSeqRef.current;
       setLoading(true);
       setActiveChapterId(normalizedId);
 
@@ -78,24 +93,32 @@ export default function BookReader({
         );
         if (!res.ok) throw new Error("加载失败");
         const data = (await res.json()) as { content: string };
-        setContent(data.content ?? "");
+        if (seq !== fetchSeqRef.current) return;
+        const nextContent = data.content ?? "";
+        setContent(nextContent);
+        contentRef.current = nextContent;
       } catch {
-        setContent("章节加载失败，请稍后重试。");
+        if (seq !== fetchSeqRef.current) return;
+        const message = "章节加载失败，请稍后重试。";
+        setContent(message);
+        contentRef.current = message;
       } finally {
-        setLoading(false);
-        setMobileOpen(false);
+        if (seq === fetchSeqRef.current) {
+          setLoading(false);
+          setMobileOpen(false);
+        }
       }
     },
-    [shortBookId, activeChapterId, content, chapterFromUrl, updateChapterUrl]
+    [shortBookId, activeChapterId, chapterFromUrl, updateChapterUrl]
   );
 
   // URL 带 chapter 时：SSR 已匹配则直接用；否则客户端补拉（兼容旧链接 / 数字 id）
   useEffect(() => {
     if (!chapterFromUrl) return;
     const urlId = normalizeChapterId(chapterFromUrl);
-    if (urlId === activeChapterId && content) return;
+    if (urlId === activeChapterId && contentRef.current) return;
     loadChapter(urlId, { syncUrl: false });
-  }, [chapterFromUrl, activeChapterId, content, loadChapter]);
+  }, [chapterFromUrl, activeChapterId, loadChapter]);
 
   const shareUrl =
     typeof window !== "undefined" && activeChapterId
