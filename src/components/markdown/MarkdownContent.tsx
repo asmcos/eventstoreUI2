@@ -16,10 +16,15 @@ function extractCodeBlock(children: React.ReactNode): { code: string; lang: stri
     return null;
   }
   const className = children.props.className ?? "";
-  if (!className.includes("language-")) return null;
-  const lang = className.replace(/.*language-(\S+).*/, "$1");
   const code = String(children.props.children ?? "").replace(/\n$/, "");
-  return { code, lang };
+  if (!code) return null;
+
+  if (className.includes("language-")) {
+    const lang = className.replace(/.*language-(\S+).*/, "$1");
+    return { code, lang };
+  }
+
+  return { code, lang: "bash" };
 }
 
 const components: Components = {

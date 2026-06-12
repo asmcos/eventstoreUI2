@@ -63,17 +63,17 @@ function escapeHtml(code: string): string {
   return code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/** 解析 fence 语言；未知语言回退 plaintext（同原项目 targetLang = lang || "text"） */
+/** 未标注或 text/txt 时默认 bash；未知语言回退 plaintext */
 function resolveHighlightLang(lang: string): string {
   const raw = lang.trim().toLowerCase().split(":")[0] ?? "";
-  if (!raw || raw === "text" || raw === "txt") return "plaintext";
+  if (!raw || raw === "text" || raw === "txt") return "bash";
   const mapped = LANG_ALIASES[raw] ?? raw;
   return REGISTERED.has(mapped) ? mapped : "plaintext";
 }
 
 function displayLangLabel(lang: string): string {
   const raw = lang.trim().split(":")[0] ?? "";
-  return raw || "text";
+  return raw || "bash";
 }
 
 function highlightCode(code: string, lang: string): string {
