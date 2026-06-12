@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 辰龙文档中心 (eventStoreUI2)
 
-## Getting Started
+基于 **Next.js 16 App Router** 的 SEO 友好版技术文档社区，支持电子书、博客、论坛三大公开展示模块，以及创作/管理后台。
 
-First, run the development server:
+## 技术栈
+
+- Next.js 16 (App Router, SSR)
+- React 19 + TypeScript
+- Tailwind CSS 4
+- EventStore WebSocket (`eventstore-tools`)
+- react-markdown (服务端 Markdown 渲染)
+
+## 快速开始
 
 ```bash
+# 安装依赖
+npm install
+
+# 配置环境变量
+cp .env.example .env.local
+
+# 启动开发服务器（需 EventStore 运行在 ws://127.0.0.1:8080）
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 项目结构
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── (public)/          # SEO 公开展示页（SSR）
+│   │   ├── page.tsx       # 首页
+│   │   ├── books/         # 电子书
+│   │   ├── blogs/         # 博客
+│   │   └── topics/        # 论坛
+│   ├── (app)/             # 创作/管理（noindex）
+│   │   ├── creator/       # 创作中心
+│   │   ├── editbook/      # 书籍编辑（迁移中）
+│   │   ├── editblog/      # 博客编辑（迁移中）
+│   │   ├── edittopic/     # 话题发布（迁移中）
+│   │   └── admin/         # 管理后台（迁移中）
+│   ├── robots.ts          # robots.txt
+│   └── sitemap.ts         # 动态 sitemap
+├── components/
+├── lib/
+│   ├── esclient/          # EventStore SDK
+│   ├── seo.ts             # SEO metadata 工具
+│   └── config.ts
+```
 
-## Learn More
+## SEO 特性
 
-To learn more about Next.js, take a look at the following resources:
+- 每页独立 `metadata` / `generateMetadata`
+- 动态 `sitemap.xml`（书籍/博客/话题）
+- `robots.txt`（屏蔽 admin/编辑页）
+- JSON-LD 结构化数据（WebSite、Book、BlogPosting、DiscussionForumPosting）
+- 语义化 `<a href>` 链接，服务端渲染完整 HTML
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 环境变量
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `EVENTSTORE_WS_URL` | EventStore WebSocket | `ws://127.0.0.1:8080/` |
+| `UPLOAD_BASE_URL` | 文件上传 CDN | `http://127.0.0.1:8081/uploads/` |
+| `NEXT_PUBLIC_SITE_URL` | 站点域名（SEO） | `https://docs.chenlongos.cn` |
 
-## Deploy on Vercel
+## 迁移进度
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] 项目骨架 + SEO 基础设施
+- [x] 首页（书籍/博客推荐）
+- [x] 书籍/博客/话题列表与详情（博客/话题 Markdown SSR）
+- [x] 短 ID 路由支持（`{user8}-{id8}`）
+- [ ] 电子书章节阅读器（目录树 + VitePress 渲染）
+- [ ] 论坛回帖
+- [ ] 登录 / 私钥认证
+- [ ] 编辑器（书籍/博客/话题）
+- [ ] 管理后台

@@ -1,26 +1,197 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@plugin "@tailwindcss/typography";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --color-brand-50: #eff6ff;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-surface: #f9fafb;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .logo-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    text-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+  }
+
+  @media (min-width: 768px) {
+    .logo-title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .creator-btn {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  }
+
+  .creator-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-lg border-2 border-white/80 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/10;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50;
+  }
+
+  .card {
+    @apply overflow-hidden rounded-2xl border border-gray-100/80 bg-white shadow-sm transition-all duration-300 hover:shadow-lg;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  word-break: break-word;
+  background-color: #f9fafb;
+  color: #111827;
+  line-height: 1.6;
+}
+
+main {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  flex-direction: column;
+}
+
+main > section {
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+/* 文章正文排版 */
+.prose-content {
+  @apply prose prose-gray prose-lg max-w-none break-words prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-p:leading-7;
+}
+
+/* 博客详情 — 对齐原版 viewblog */
+.blog-article-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  padding-left: 1rem;
+  border-left: 4px solid #4f46e5;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.blog-main-container {
+  display: flex;
+  gap: 2rem;
+  max-width: 80rem;
+}
+
+.blog-content-container {
+  flex: 1;
+  max-width: 100%;
+}
+
+.right-toc-container {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .blog-main-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* 书籍阅读器 — 对齐原版 viewbooks */
+.book-view-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.book-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.8rem;
+  overflow-y: auto;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.book-content {
+  flex: 1;
+  background: #ffffff;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.author-dot {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.author-dot::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .book-sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-content {
+    height: auto;
+    min-height: 100vh;
+  }
+}
+
+/* 创作中心卡片悬停 */
+.content-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-cover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-cover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
