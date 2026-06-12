@@ -10,14 +10,15 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@tailwindcss/typography": "^0.5.20",
     "eventstore-tools": "github:asmcos/eventstore-tools",
-    "highlight.js": "^11.11.1",
+    "fumadocs-core": "^16.10.1",
+    "fumadocs-ui": "^16.10.1",
     "lucide-react": "^1.17.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {

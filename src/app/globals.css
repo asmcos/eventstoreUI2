@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
 
 @theme inline {
   --font-sans: var(--font-inter);
@@ -88,9 +89,9 @@ main > section {
   flex-shrink: 0;
 }
 
-/* 文章正文排版 */
+/* 文章正文排版（Fumadocs prose 由 MarkdownContent 的 article.prose 提供） */
 .prose-content {
-  @apply prose prose-gray prose-lg max-w-none break-words prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-p:leading-7;
+  @apply max-w-none;
 }
 
 /* 博客详情 — 对齐原版 viewblog */

@@ -75,13 +75,11 @@ export default async function TopicDetailPage({ params }: TopicDetailPageProps) 
               </time>
             )}
           </header>
-          <div className="prose-content">
-            {typeof topic.data.content === "string" ? (
-              <MarkdownContent content={topic.data.content} />
-            ) : (
-              <p className="text-gray-500">暂无内容</p>
-            )}
-          </div>
+          {typeof topic.data.content === "string" ? (
+            <MarkdownContent content={topic.data.content} />
+          ) : (
+            <p className="text-gray-500">暂无内容</p>
+          )}
           <div className="mt-8 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
             回帖与楼中楼功能正在迁移中，即将支持登录后回复讨论。
           </div>

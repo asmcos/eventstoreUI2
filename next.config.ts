@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["eventstore-tools"],
+  transpilePackages: ["fumadocs-ui", "fumadocs-core"],
   images: {
     remotePatterns: [
       {

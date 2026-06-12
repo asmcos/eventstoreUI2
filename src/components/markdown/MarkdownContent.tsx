@@ -1,19 +1,44 @@
-import React, { isValidElement } from "react";
+"use client";
+
+import React, {
+  isValidElement,
+  useMemo,
+  type HTMLAttributes,
+  type ImgHTMLAttributes,
+  type ReactNode,
+} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import type { Components } from "react-markdown";
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 import { slugifyHeading } from "@/lib/markdown/toc";
-import { inferFenceLang } from "@/lib/markdown/code-lang";
-import CodeBlock from "@/components/markdown/CodeBlock";
-import "@/styles/code-block.css";
+import { displayLangLabel, inferFenceLang, resolveHighlightLang } from "@/lib/markdown/code-lang";
+import { htmlStyleToObject, normalizeMarkdownHtml } from "@/lib/markdown/preprocess";
 
 interface MarkdownContentProps {
   content: string;
   className?: string;
 }
 
-function extractCodeBlock(children: React.ReactNode): { code: string; lang: string } | null {
-  if (!isValidElement<{ className?: string; children?: React.ReactNode }>(children)) {
+function MarkdownImage({ src, alt, style, className, ...props }: ImgHTMLAttributes<HTMLImageElement>) {
+  if (!src) return null;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- 用户 Markdown 含任意上传域名与 inline style
+    <img
+      src={src}
+      alt={alt ?? ""}
+      style={htmlStyleToObject(style)}
+      className={className ? `my-4 rounded-lg ${className}` : "my-4 max-w-full rounded-lg"}
+      loading="lazy"
+      {...props}
+    />
+  );
+}
+
+function extractCodeBlock(children: ReactNode): { code: string; lang: string } | null {
+  if (!isValidElement<{ className?: string; children?: ReactNode }>(children)) {
     return null;
   }
   const className = children.props.className ?? "";
@@ -28,81 +53,69 @@ function extractCodeBlock(children: React.ReactNode): { code: string; lang: stri
   return { code, lang: inferFenceLang(code) };
 }
 
+function wrapHeading(
+  Component: (props: HTMLAttributes<HTMLHeadingElement>) => React.JSX.Element
+) {
+  return ({ children, ...props }: HTMLAttributes<HTMLHeadingElement>) => {
+    const id = props.id ?? slugifyHeading(String(children));
+    return (
+      <Component {...props} id={id}>
+        {children}
+      </Component>
+    );
+  };
+}
+
+function toShikiLang(lang: string): string {
+  const resolved = resolveHighlightLang(lang);
+  return resolved === "plaintext" ? "text" : resolved;
+}
+
 const components: Components = {
-  h1: ({ children }) => {
-    const text = String(children);
-    return (
-      <h1
-        id={slugifyHeading(text)}
-        className="mb-4 mt-8 scroll-mt-24 text-2xl font-bold text-slate-800"
-      >
-        {children}
-      </h1>
-    );
-  },
-  h2: ({ children }) => {
-    const text = String(children);
-    return (
-      <h2
-        id={slugifyHeading(text)}
-        className="mb-3 mt-8 scroll-mt-24 border-b border-slate-100 pb-2 text-xl font-bold text-slate-800"
-      >
-        {children}
-      </h2>
-    );
-  },
-  h3: ({ children }) => {
-    const text = String(children);
-    return (
-      <h3
-        id={slugifyHeading(text)}
-        className="mb-2 mt-6 scroll-mt-24 text-lg font-semibold text-slate-800"
-      >
-        {children}
-      </h3>
-    );
-  },
-  p: ({ children }) => <p className="mb-6 leading-7 text-slate-700">{children}</p>,
-  blockquote: ({ children }) => (
-    <blockquote className="my-8 rounded-r-md border-l-4 border-indigo-600 bg-slate-50 py-4 pl-6 italic text-slate-600">
-      {children}
-    </blockquote>
-  ),
-  a: ({ href, children }) => (
-    <a href={href} className="text-blue-600 underline-offset-2 hover:underline">
-      {children}
-    </a>
-  ),
+  h1: wrapHeading(defaultMdxComponents.h1),
+  h2: wrapHeading(defaultMdxComponents.h2),
+  h3: wrapHeading(defaultMdxComponents.h3),
+  h4: wrapHeading(defaultMdxComponents.h4),
+  h5: wrapHeading(defaultMdxComponents.h5),
+  h6: wrapHeading(defaultMdxComponents.h6),
+  a: defaultMdxComponents.a,
+  table: defaultMdxComponents.table,
+  img: MarkdownImage,
   pre: ({ children }) => {
     const block = extractCodeBlock(children);
     if (block) {
-      return <CodeBlock code={block.code} lang={block.lang} />;
+      const lang = toShikiLang(block.lang);
+      const title = displayLangLabel(block.lang);
+      return (
+        <DynamicCodeBlock
+          lang={lang}
+          code={block.code}
+          codeblock={title ? { title } : undefined}
+        />
+      );
     }
-    return (
-      <pre className="my-6 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100">
-        {children}
-      </pre>
-    );
+    return defaultMdxComponents.pre({ children });
   },
   code: ({ className, children }) => {
-    const isBlock = className?.includes("language-");
-    if (isBlock) {
+    if (className?.includes("language-")) {
       return <code className={className}>{children}</code>;
     }
-    return (
-      <code className="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-indigo-700">
-        {children}
-      </code>
-    );
+    return <code>{children}</code>;
   },
 };
 
 export default function MarkdownContent({ content, className = "" }: MarkdownContentProps) {
+  const processed = useMemo(() => normalizeMarkdownHtml(content), [content]);
+
   return (
-    <div className={`vp-doc blog-content ${className}`}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-        {content}
+    <article className={`prose max-w-none ${className}`}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+        components={components}
+      >
+        {processed}
       </ReactMarkdown>
-    </div>
+    </article>
   );
 }

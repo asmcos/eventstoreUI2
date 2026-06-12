@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import FumadocsShell from "@/components/providers/FumadocsShell";
 import { buildMetadata, buildOrganizationJsonLd, buildWebsiteJsonLd } from "@/lib/seo";
 
 const inter = Inter({
@@ -34,7 +35,9 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-gray-50 antialiased">{children}</body>
+      <body className="min-h-full flex flex-col bg-gray-50 antialiased">
+        <FumadocsShell>{children}</FumadocsShell>
+      </body>
     </html>
   );
 }
