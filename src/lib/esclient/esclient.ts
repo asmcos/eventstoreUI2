@@ -72,8 +72,12 @@ export async function get_events(pubkey,privkey,offset,limit,callback){
       }
       client.subscribe(secureEvent(event,privkey),function(message){
          
-        if (message[2] == "EOSE") client.unsubscribe(message[1]);
-        else callback(message[2])
+        if (message[2] == "EOSE") {
+          client.unsubscribe(message[1]);
+          callback("EOSE");
+        } else {
+          callback(message[2]);
+        }
       });      
 }
 
@@ -140,8 +144,12 @@ export async function get_permissions(pubkeys,callback){
       }
       client.subscribe(event,function(message){
          
-        if (message[2] == "EOSE") client.unsubscribe(message[1]);
-        else callback(message[2])
+        if (message[2] == "EOSE") {
+          client.unsubscribe(message[1]);
+          callback("EOSE");
+        } else {
+          callback(message[2]);
+        }
       });      
 }
 
